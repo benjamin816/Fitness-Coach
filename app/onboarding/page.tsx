@@ -3,44 +3,32 @@
 
 import React, { useState } from 'react';
 import { useStorage } from '../../components/StorageContext';
-import { UserProfile, GoalSettings, Sex, ActivityStyle, GoalMode } from '../../lib/types';
+import { UserProfile, GoalSettings, Sex, GoalMode } from '../../lib/types';
 import { DEFAULT_TIMEZONE } from '../../lib/constants';
 import { feetInchesToCm } from '../../lib/calculators';
 
-interface OnboardingPageProps {
-  onComplete: (profile: UserProfile) => void;
-}
-
-export default function OnboardingPage({ onComplete }: OnboardingPageProps) {
+export default function OnboardingPage({ onComplete }: { onComplete: (p: UserProfile) => void }) {
   const storage = useStorage();
   const [step, setStep] = useState(1);
-  const [sex, setSex] = useState<Sex>('male');
-  const [age, setAge] = useState(25);
-  const [heightFt, setHeightFt] = useState(5);
-  const [heightIn, setHeightIn] = useState(9);
   const [weight, setWeight] = useState(165);
-  const [mode, setMode] = useState<GoalMode>('fat-loss');
 
   const handleFinish = async () => {
-    const heightCm = feetInchesToCm(heightFt, heightIn);
-    const profile: UserProfile = { id: 'me', sex, ageYears: age, heightCm, startingWeightLb: weight, timezone: DEFAULT_TIMEZONE, createdAt: Date.now(), updatedAt: Date.now() };
-    const goals: GoalSettings = { id: 'current', mode, goalRate: 1, activityStyle: 'standard', targetWeightCustomized: false, startDateISO: new Date().toISOString().split('T')[0], updatedAt: Date.now() };
-    await storage.setUserProfile(profile);
-    await storage.setGoalSettings(goals);
-    onComplete(profile);
+    const p: UserProfile = { id: 'me', sex: 'male', ageYears: 25, heightCm: 175, startingWeightLb: weight, timezone: DEFAULT_TIMEZONE, createdAt: Date.now(), updatedAt: Date.now() };
+    const g: GoalSettings = { id: 'current', mode: 'fat-loss', goalRate: 1, activityStyle: 'standard', targetWeightCustomized: false, startDateISO: new Date().toISOString().split('T')[0], updatedAt: Date.now() };
+    await storage.setUserProfile(p);
+    await storage.setGoalSettings(g);
+    onComplete(p);
   };
 
   return (
-    <div className="min-h-[80vh] flex flex-col items-center justify-center p-6">
-      <div className="max-w-md w-full bg-white p-8 rounded-2xl shadow-xl border">
-        <h1 className="text-3xl font-bold text-blue-600 mb-4">Welcome</h1>
+    <div className="max-w-md mx-auto py-20 px-6">
+      <div className="bg-white p-8 rounded-2xl shadow-xl border">
+        <h1 className="text-2xl font-bold mb-6">Setup Profile</h1>
         {step === 1 ? (
-          <div className="space-y-6">
-            <button onClick={() => setStep(2)} className="w-full py-4 bg-blue-600 text-white rounded-xl font-bold shadow-lg">Start Profile</button>
-          </div>
+          <button onClick={() => setStep(2)} className="w-full py-4 bg-blue-600 text-white rounded-xl font-bold">Start</button>
         ) : (
-          <div className="space-y-6">
-            <input type="number" value={weight} onChange={e => setWeight(parseInt(e.target.value))} className="w-full p-4 border rounded-xl" placeholder="Weight (lb)" />
+          <div className="space-y-4">
+            <input type="number" value={weight} onChange={e => setWeight(parseInt(e.target.value))} className="w-full p-4 border rounded-xl" placeholder="Weight" />
             <button onClick={handleFinish} className="w-full py-4 bg-blue-600 text-white rounded-xl font-bold">Finish</button>
           </div>
         )}

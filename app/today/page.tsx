@@ -12,8 +12,7 @@ import {
 } from '../../lib/calculators';
 import { getPlanAchievedDelta, getPlanStatusLabel } from '../../lib/planAdherence';
 import { ACTIVITY_TARGETS } from '../../lib/constants';
-import { Flame, Footprints, Timer, Weight, Trophy, Sparkles, RefreshCcw, TrendingUp } from 'lucide-react';
-import Link from 'next/link';
+import { Flame, Footprints, Timer, Weight } from 'lucide-react';
 import CoachBar from '../../components/CoachBar';
 
 export default function TodayPage() {
@@ -90,13 +89,6 @@ export default function TodayPage() {
   const stepTarget = ACTIVITY_TARGETS[goals.activityStyle].steps;
   const azmTarget = ACTIVITY_TARGETS[goals.activityStyle].azm;
 
-  const workoutTargetMap = {
-    'low-cardio': 1,
-    'standard': 2,
-    'high-activity': 3
-  };
-  const workoutGoal = workoutTargetMap[goals.activityStyle];
-
   const achievedDelta = getPlanAchievedDelta({
     mode: goals.mode,
     plannedDailyDelta: plannedDailyDelta,
@@ -135,42 +127,25 @@ export default function TodayPage() {
   return (
     <div className="space-y-6">
       <header>
-        <h2 className="text-2xl font-bold">Today, {new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric' })}</h2>
-        <p className="text-gray-500">Manual entry coaching for your health journey.</p>
+        <h2 className="text-2xl font-bold">Today</h2>
+        <p className="text-gray-500">Log your progress for the day.</p>
       </header>
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div className="bg-white p-4 rounded-xl border shadow-sm flex flex-col justify-center">
-          <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Current Goal</p>
-          <div className="flex flex-col">
-            <span className="text-sm font-bold text-blue-600 truncate capitalize">{goals.mode.replace('-', ' ')}</span>
-            <span className="text-[10px] text-gray-400">{goals.mode === 'maintenance' ? 'Stable' : `${goals.goalRate} lb/week`}</span>
-          </div>
-        </div>
-
-        <div className="bg-white p-4 rounded-xl border shadow-sm flex flex-col justify-center">
-          <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Calories Intake</p>
+        <div className="bg-white p-4 rounded-xl border shadow-sm">
+          <p className="text-[10px] font-bold text-gray-400 uppercase mb-1">Cals Intake</p>
           <div className="flex items-baseline gap-1">
             <span className="text-xl font-bold text-gray-900">{log.calories || 0}</span>
             <span className="text-xs text-gray-400">/ {calorieTarget}</span>
           </div>
         </div>
-        
-        <div className="bg-white p-4 rounded-xl border shadow-sm flex flex-col justify-center">
-          <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Net {getPlanStatusLabel(goals.mode, achievedDelta)}</p>
+        <div className="bg-white p-4 rounded-xl border shadow-sm">
+          <p className="text-[10px] font-bold text-gray-400 uppercase mb-1">Plan {getPlanStatusLabel(goals.mode, achievedDelta)}</p>
           <div className="flex items-baseline gap-1">
             <span className={`text-xl font-bold ${achievedDelta === undefined ? 'text-gray-400' : (achievedDelta < 0 ? 'text-emerald-600' : 'text-red-600')}`}>
               {achievedDelta === undefined ? 'N/A' : Math.round(Math.abs(achievedDelta))}
             </span>
             <span className="text-xs text-gray-400">/ {Math.abs(plannedDailyDelta)}</span>
-          </div>
-        </div>
-
-        <div className="bg-white p-4 rounded-xl border shadow-sm flex flex-col justify-center">
-          <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Weekly Workouts</p>
-          <div className="flex items-baseline gap-1">
-            <span className={`text-xl font-bold ${weeklySessions.length >= workoutGoal ? 'text-blue-600' : 'text-gray-900'}`}>{weeklySessions.length}</span>
-            <span className="text-xs text-gray-400">/ {workoutGoal}</span>
           </div>
         </div>
       </div>
@@ -181,70 +156,51 @@ export default function TodayPage() {
         <div className="p-4 flex items-center justify-between">
           <div className="flex items-center space-x-3">
             <Weight className="text-purple-600" size={20} />
-            <div className="flex flex-col">
-              <span className="font-medium">Weight (lb)</span>
-              <span className="text-[10px] text-gray-400">Avg: {historicalAvgWeight.toFixed(1)}lb</span>
-            </div>
+            <span className="font-medium">Weight (lb)</span>
           </div>
           <input 
             type="number" 
             value={log.weightLb || ''}
             onChange={(e) => updateLog({ weightLb: parseFloat(e.target.value) || undefined })}
-            className="w-24 text-right bg-gray-50 border rounded-md p-2 focus:ring-2 focus:ring-blue-500 outline-none font-mono"
+            className="w-24 text-right bg-gray-50 border rounded-lg p-2 outline-none font-mono"
           />
         </div>
-
         <div className="p-4 flex items-center justify-between">
           <div className="flex items-center space-x-3">
             <Flame className="text-orange-600" size={20} />
-            <div className="flex flex-col">
-              <span className="font-medium">Calories Eaten</span>
-              <span className="text-[10px] text-gray-400">Target: {calorieTarget}</span>
-            </div>
+            <span className="font-medium">Calories</span>
           </div>
           <input 
             type="number" 
             value={log.calories || ''}
             onChange={(e) => updateLog({ calories: parseInt(e.target.value) || 0 })}
-            className="w-24 text-right bg-gray-50 border rounded-md p-2 focus:ring-2 focus:ring-blue-500 outline-none font-mono"
+            className="w-24 text-right bg-gray-50 border rounded-lg p-2 outline-none font-mono"
           />
         </div>
-
         <div className="p-4 flex items-center justify-between">
           <div className="flex items-center space-x-3">
             <Footprints className="text-blue-600" size={20} />
-            <div className="flex flex-col">
-              <span className="font-medium">Steps</span>
-              <span className="text-[10px] font-bold text-blue-500 uppercase">Goal: {stepTarget}</span>
-            </div>
+            <span className="font-medium">Steps</span>
           </div>
           <input 
             type="number" 
             value={log.steps || ''}
             onChange={(e) => updateLog({ steps: parseInt(e.target.value) || 0 })}
-            className="w-24 text-right bg-gray-50 border rounded-md p-2 focus:ring-2 focus:ring-blue-500 outline-none font-mono font-bold"
+            className="w-24 text-right bg-gray-50 border rounded-lg p-2 outline-none font-mono"
           />
         </div>
-
         <div className="p-4 flex items-center justify-between">
           <div className="flex items-center space-x-3">
             <Timer className="text-yellow-600" size={20} />
-            <div className="flex flex-col">
-              <span className="font-medium">AZM</span>
-              <span className="text-[10px] font-bold text-yellow-600 uppercase">Goal: {azmTarget}</span>
-            </div>
+            <span className="font-medium">AZM</span>
           </div>
           <input 
             type="number" 
             value={log.azm || ''}
             onChange={(e) => updateLog({ azm: parseInt(e.target.value) || 0 })}
-            className="w-24 text-right bg-gray-50 border rounded-md p-2 focus:ring-2 focus:ring-blue-500 outline-none font-mono font-bold"
+            className="w-24 text-right bg-gray-50 border rounded-lg p-2 outline-none font-mono"
           />
         </div>
-      </div>
-
-      <div className="flex justify-end items-center space-x-2 text-xs text-gray-400 italic">
-        {saving ? <span className="animate-pulse">Saving changes...</span> : <span>All data is stored locally on this device</span>}
       </div>
     </div>
   );

@@ -8,6 +8,6 @@ export function getStartingWeightSuggestion(profile: UserProfile, exerciseKey: s
 }
 export function calculateNextTarget(exercise: ProgramExercise, history: ExerciseEntry[]): ProgressionTarget {
   if (history.length === 0) return { reps: exercise.repMin, isSuggestion: true };
-  const last = history[0];
+  const last = history[history.length - 1];
   return { weight: last.weight, reps: Math.min(last.reps + 1, exercise.repMax), isSuggestion: false };
 }

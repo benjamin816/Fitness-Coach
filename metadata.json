@@ -1,0 +1,7 @@
+{
+  "name": "Fitness Coach MVP",
+  "description": "A comprehensive, manual-entry fitness coaching app for fat loss, maintenance, and lean gain. Features daily check-ins, adaptive TDEE logic, and a structured weightlifting log with built-in programs.",
+  "requestFramePermissions": [
+    "geolocation"
+  ]
+}
